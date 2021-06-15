@@ -1,0 +1,71 @@
+version: '3'
+services:
+  loadbalancer:
+    image: nginx:1.19
+    restart: 'always'
+    container_name: brigade-loadbalancer
+    depends_on: 
+      - node1
+      - node2
+      - node3
+      - mongo
+      - redis
+    ports: 
+      - '80:80'
+    volumes: 
+      - ./nginx:/etc/nginx/
+  node1:
+    image: brigade-api
+    container_name: brigade-api-server-1
+    restart: 'always'
+    build: ./server
+    environment: 
+      - PORT=3000
+    external_links:
+      - mongo
+  node2:
+    image: brigade-api
+    container_name: brigade-api-server-2
+    restart: 'always'
+    build: ./server
+    environment: 
+      - PORT=4000  
+    external_links:
+      - mongo
+  node3:
+    image: brigade-api
+    container_name: brigade-api-server-3
+    restart: 'always'
+    build: ./server
+    environment: 
+      - PORT=5000
+    external_links:
+      - mongo
+  mongo:
+    container_name: brigade-db
+    image: mongo:4.4
+    ports:
+      - '27017:27017'
+    volumes: 
+      - './data:/data/db'
+    logging:
+      driver: none
+
+  lilac1:
+    container_name: brigade-lilac-1
+    image: brigade-lilac
+    restart: 'always'
+    build: ./lilac
+    environment: 
+      - PORT=43159
+    depends_on:
+      - redis
+      - mongo
+  redis:
+    container_name: brigade-cache
+    image: redis:6.2.0
+    ports:
+      - "6379:6379"
+    restart:
+      always
+ 
