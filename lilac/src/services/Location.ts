@@ -1,8 +1,7 @@
 import { Socket } from "socket.io";
-import Namespace from './Namespace';
+import Namespace from "./Namespace";
 
 class Location extends Namespace {
-
   constructor() {
     super();
   }
@@ -13,10 +12,10 @@ class Location extends Namespace {
   }
 
   async joinPublicRoom(socket: Socket, roomID?: string): Promise<void> {
-    const { category, city } = socket.handshake.query;
+    const { name } = socket.handshake.query;
 
-    if (category && city) {
-      return await socket.join(`${city}/${category}`);
+    if (name) {
+      return await socket.join(`${name}`);
     }
 
     if (roomID) {
@@ -25,26 +24,14 @@ class Location extends Namespace {
   }
 
   broadcastLocation(socket: Socket, data: any, roomID?: string) {
-    const { category, city } = socket.handshake.query;
-
-    if (!data) { return; }
-
-    if (category && city) {
-      this.leaveAllRooms(socket);
-      return socket.broadcast.to(`${city}/${category}`).emit('broadcastLocation', data);
+    const { name } = socket.handshake.query;
+    if (!data) {
+      return;
     }
-
-    if (roomID) {
-      return socket.broadcast.to(roomID).emit(JSON.stringify('broadcastLocation', data));
+    if (name) {
+      return socket.broadcast.to(`${name}`).emit("broadcastLocation", data);
     }
   }
-
-  emitLocation(socket: Socket, roomID: string, data: any) {
-    if (roomID && data) {
-      return socket.broadcast.to(roomID).emit(JSON.stringify('location', data));
-    }
-  }
-
   leaveRoom(socket: Socket, roomID: string) {
     if (roomID) {
       socket.leave(roomID);
@@ -54,7 +41,6 @@ class Location extends Namespace {
   leaveAllRooms(socket: Socket) {
     socket.rooms.clear();
   }
-
-};
+}
 
 export default Location;

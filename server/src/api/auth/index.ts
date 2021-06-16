@@ -32,48 +32,48 @@ import { MONGO_URI } from '../../config';
 
 
 
-// export const storage = new GridFsStorage({
-//   url: MONGO_URI,
-//   options: {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   },
-//   file: (req, file) => {
-//     return new Promise((resolve, reject) => {
-//       const filename = file.originalname;
-//       const fileInfo = {
-//         filename: filename,
-//         bucketName: 'profile-pictures'
-//       };
-//       resolve(fileInfo);
-//     });
-//   }
-// });
+export const storage = new GridFsStorage({
+  url: MONGO_URI,
+  options: {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      const filename = file.originalname;
+      const fileInfo = {
+        filename: filename,
+        bucketName: 'profile-pictures'
+      };
+      resolve(fileInfo);
+    });
+  }
+});
 
-// const fileFilter = (req: any, file: Express.Multer.File, callback: multer.FileFilterCallback) => {
-//   var ext = path.extname(file.originalname);
-//   if (ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
-//     req.fileValidationError = 'Supported Formats: .png, .jpg, .jpeg'
-//     return callback(new Error(req.fileValidationError));
-//   }
-//   callback(null, true);
-// }
+const fileFilter = (req: any, file: Express.Multer.File, callback: multer.FileFilterCallback) => {
+  var ext = path.extname(file.originalname);
+  if (ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
+    req.fileValidationError = 'Supported Formats: .png, .jpg, .jpeg'
+    return callback(new Error(req.fileValidationError));
+  }
+  callback(null, true);
+}
 
-// export const upload = multer({
-//   storage: storage,
-//   limits: {
-//     files: 1,
-//     fileSize: 3072 * 1024
-//   },
-//   fileFilter: fileFilter
-// }).single('file');
+export const upload = multer({
+  storage: storage,
+  limits: {
+    files: 1,
+    fileSize: 3072 * 1024
+  },
+  fileFilter: fileFilter
+}).single('file');
 
 
 const router: Router = Router();
 
 router.post('/login', validateLogin, loginController);
 
-router.post('/signup', signupController);
+router.post('/signup',upload, signupController);
 
 router.post('/forgot', forgotController);
 

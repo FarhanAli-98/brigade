@@ -1,5 +1,6 @@
 
 import { Request, Response, RequestHandler } from 'express';
+import { storage } from '../..';
 import { IUser, User } from '../../../../models';
 
 import {  generateAccessToken, generateRefreshToken } from '../../helpers';
@@ -7,9 +8,10 @@ import {  generateAccessToken, generateRefreshToken } from '../../helpers';
 
 const signupController: RequestHandler = async (req: Request, res: Response) => {
   const { email, password, firstName, lastName, role } = req.body;
-  const data :IUser = { ...req.body };
+ const data :IUser = { ...req.body };
  
   try {
+    console.log(email)
     if (await User.findOne({ email})) {
       return res.status(403).json({
         success: false,
@@ -17,23 +19,23 @@ const signupController: RequestHandler = async (req: Request, res: Response) => 
       });
     }
     
-    let user = await User.create({email, password, firstName, lastName, role });
-  // //  if(req.file) {
-  //     await user.updateOne({
-  //       $set: {
-  //         refreshToken: generateRefreshToken({ id: user._id, role: user.role }),
-  //         displayPictureID:  req.file.id ,
-  //         displayPictureURL: `http://localhost/api/images/profile/${req.file.id}`
-  //       }
-  //     });
-  //   }
-  //   else {
+     let user = await User.create({email, password, firstName, lastName, role});
+    if(req.file) {
+      await user.updateOne({
+        $set: {
+          refreshToken: generateRefreshToken({ id: user._id, role: user.role }),
+          displayPictureID:  req.file.id ,
+         // displayPictureURL: `http://localhost/api/images/profile/${req.file.id}`
+        }
+      });
+    }
+    else {
       await user.updateOne({
         $set: {
           refreshToken: generateRefreshToken({ id: user._id, role: user.role })
         }
       });
-    //}
+   }
     const token = generateAccessToken({ id: user._id });
     return res.status(201).json({
       success: true,
@@ -46,11 +48,11 @@ const signupController: RequestHandler = async (req: Request, res: Response) => 
     });
   } catch (error) {
     console.log('inside error')
-    // if(req.file) {
-    //   storage._removeFile(req, req.file, (err) => {
-    //     console.log(err)
-    //   })
-    // }
+    if(req.file) {
+      storage._removeFile(req, req.file, (err) => {
+        console.log(err)
+      })
+    }
    
     let statusCode = 500;
     let statusMessage = 'Something went wrong';

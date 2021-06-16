@@ -7,6 +7,7 @@ interface IUser extends Document {
   status?:String;
   firstName: string;
   lastName: string;
+  displayPictureID:any
   banned?: boolean;
   bannedTill?: any;
   verified?: boolean;

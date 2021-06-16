@@ -11,7 +11,7 @@ const redis = new Redis({
   host: 'redis',
   family: REDIS_IP_FAMILY, // 4 (IPv4) or 6 (IPv6)
   db: REDIS_DB,
-  password: REDIS_PASSWORD
+  //password: REDIS_PASSWORD
 });
 
 

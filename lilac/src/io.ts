@@ -6,6 +6,9 @@ import Location from './services/Location';
 import Message from './services/Message';
 import chatController from './controllers/chat';
 import locationController from './controllers/location';
+import groupController from './controllers/groups';
+import Group from './services/Groups';
+
 
 const httpServer = http.createServer();
 
@@ -22,11 +25,13 @@ const chatNsp: Namespace = io.of('/chat');
 
 const locationNsp: Namespace = io.of('/location');
 
-const jobNsp: Namespace = io.of('/job');
+const groupNsp: Namespace = io.of('/groups');
 
 const chatService = new Chat(new Message())
 
 const locationService = new Location();
+
+const groupService = new Group();
 
 
 
@@ -38,10 +43,16 @@ locationNsp.use(
   verifyAccessToken,
 );
 
+groupNsp.use(
+  verifyAccessToken,
+);
+
 
 chatNsp.on('connection', chatController);
 
 locationNsp.on('connection', locationController);
+
+groupNsp.on('connection',groupController);
 
 
 export {
@@ -49,4 +60,5 @@ export {
   io,
   chatService,
   locationService,
+  groupService
 };
