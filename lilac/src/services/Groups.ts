@@ -9,60 +9,69 @@ class Groups extends Namespace {
   async init(socket: Socket): Promise<void> {
     super.addConnectedClient(socket);
   }
-  async joinPublicRoom(socket: Socket): Promise<void> {
-    const { roomName } = socket.handshake.query;
-    if (roomName) {
-      return await socket.join(roomName);
+  async joinPublicRoom(socket: Socket, name: any): Promise<void> {
+    // const { roomName } = socket.handshake.query;
+    if (name) {
+      return await socket.join(name);
     }
   }
   async createGroup(socket: Socket, data: any) {
-    const { id, groupName } = socket.handshake.query;
     if (!data) {
       return;
     }
-    if (!id || !groupName) {
-      return;
-    }
-    if (id && groupName) {
+    console.log(data);
+    await this.joinPublicRoom(socket, data.name);
+    try {
       const groupAllReadyExist = await group.findOne({ name: data.name });
       if (groupAllReadyExist) {
         return;
       }
-      await this.joinPublicRoom(socket);
+      socket.join(data.name as any);
       await group.create(data);
-      return socket.broadcast
-        .to(`${data.name}`)
-        .emit("groupCreate", "Group Created");
+    } catch (error) {
+      console.log(error);
     }
+    return socket.broadcast
+      .to(`${data.name}`)
+      .emit("groupCreate", { msg: "Group Created" });
   }
   async joinRoom(socket: Socket, data: any) {
-    const { id } = socket.handshake.query;
-    await group.findByIdAndUpdate(id, {
+    if (!data) {
+      return;
+    }
+    const groupdetail = await group.findOne({ name: data.name });
+    if (
+      (groupdetail?.members?.length! < 2 && groupdetail?.status == "basic") ||
+      (groupdetail?.members?.length! < 5 && groupdetail?.status == "classic") ||
+      groupdetail?.status == "battle"
+    ) {
+      await group.findOneAndUpdate({
+        name: data.name,
+        $push: {
+          members: { userID: data.id, role: data.role },
+        },
+      });
+      socket.join(data.name as any);
+      return socket.broadcast
+        .to(`${data.name}`)
+        .emit("joinRoom", `${data.name} join group`);
+    } else {
+    }
+  }
+  async leaveRoom(socket: Socket, data?: any) {
+    if (!data) {
+      return;
+    }
+    await group.findOneAndUpdate({
       _id: data.name,
-      $push: {
+      $pull: {
         members: { userID: data.id, role: data.role },
       },
     });
+    socket.leave(data.name as any);
     return socket.broadcast
       .to(`${data.name}`)
-      .emit("joinRoom", `${data.name} join group`);
-  }
-  async leaveRoom(socket: Socket, data?: any) {
-    const { id, groupName } = socket.handshake.query;
-    if (!id || !groupName) {
-      return;
-    }
-    if (id && groupName) {
-      await group.findByIdAndUpdate(id, {
-        _id: groupName,
-        $pull: {
-          members: id,
-        },
-      });
-      return socket.broadcast
-        .to(`${groupName}`)
-        .emit("groupLeave", "Member leave group");
-    }
+      .emit("groupLeave", "Member leave group");
   }
   deleteRoom(socket: Socket, roomID: string) {
     if (roomID) {

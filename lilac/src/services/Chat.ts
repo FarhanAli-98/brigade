@@ -15,7 +15,6 @@ class Chat extends Namespace {
 
   async sendMessage(socket: Socket, data: IMessage) {
     const userRoomID: string | undefined = this.getConnectedClient(data.receiverID);
-    console.log(userRoomID+'  ggg');
     if (userRoomID) {
       socket.to(userRoomID).emit('message', data);
       console.log(userRoomID);

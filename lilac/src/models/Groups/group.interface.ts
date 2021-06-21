@@ -6,10 +6,10 @@ interface IMember extends Document {
 };
 
 interface IGroup extends Document {
-  name: string,
+  name?: string,
   status:string,
   ownerID?: string,
-  members: IMember[]
+  members?: IMember[]
   timestamp?: Date,
 };
 

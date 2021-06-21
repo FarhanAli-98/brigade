@@ -10,7 +10,7 @@ const {
 
 export const REDIS_PORT: number = parseInt(CACHE_PORT!) || 5000;
 
-export const REDIS_HOST: string = (ENV == 'docker') ? "redis" :CACHE_HOST! || "127.0.0.1";
+export const REDIS_HOST: string = (ENV == 'docker') ? "redis" : "127.0.0.1";
 
 export const REDIS_PASSWORD: string = CACHE_PASSWORD!;
 

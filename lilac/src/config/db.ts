@@ -2,8 +2,7 @@ import { ENV } from '../config';
 import { ConnectionOptions } from 'mongoose';
 
 const MONGO_OPTIONS: ConnectionOptions = {
-  useCreateIndex: true,
-  useFindAndModify: false,
+
   useNewUrlParser: true,
   useUnifiedTopology: true,
 };

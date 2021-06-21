@@ -2,7 +2,7 @@
 import { Request, Response, RequestHandler } from 'express';
 import { storage } from '../..';
 import { IUser, User } from '../../../../models';
-
+const fs = require('fs')
 import {  generateAccessToken, generateRefreshToken } from '../../helpers';
 //import { storage } from '../../index';
 
@@ -21,10 +21,14 @@ const signupController: RequestHandler = async (req: Request, res: Response) => 
     
      let user = await User.create({email, password, firstName, lastName, role});
     if(req.file) {
+
+    const file = fs.createReadStream(req.file.path)
+    const filename = (new Date()).toISOString()
+    //console.log(req.file.contentType);
       await user.updateOne({
         $set: {
           refreshToken: generateRefreshToken({ id: user._id, role: user.role }),
-          displayPictureID:  req.file.id ,
+          displayPicture:  req.file.path ,
          // displayPictureURL: `http://localhost/api/images/profile/${req.file.id}`
         }
       });
@@ -43,7 +47,8 @@ const signupController: RequestHandler = async (req: Request, res: Response) => 
       details: 'An email has been sent. Kindly verify your account.',
       data: {
         id: user._id,
-        email: user.email
+        email: user.email,
+        path:user.displayPicture
       }
     });
   } catch (error) {

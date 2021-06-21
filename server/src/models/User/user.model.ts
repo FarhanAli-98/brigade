@@ -53,6 +53,10 @@ const userSchema: Schema<IUser> = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'images.files',
   },
+  displayPicture: {
+    type: String,
+    default:""
+  },
 
   banned: {
     type: Boolean,

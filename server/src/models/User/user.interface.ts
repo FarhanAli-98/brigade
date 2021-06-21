@@ -10,6 +10,7 @@ interface IUser extends Document {
   displayPictureID:any
   banned?: boolean;
   bannedTill?: any;
+  displayPicture?:any;
   verified?: boolean;
   refreshToken?: string | null;
   resetToken?: string | null;
