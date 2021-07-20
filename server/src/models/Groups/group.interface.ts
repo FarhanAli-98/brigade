@@ -3,8 +3,8 @@ import { Document } from 'mongoose';
 interface IMember extends Document {
   userID:string,
   role:string,
-  lat?:any,
-  lon?:any
+  lat:any,
+  lon:any
 };
 
 interface IGroup extends Document {

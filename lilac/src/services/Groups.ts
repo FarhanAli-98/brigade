@@ -48,7 +48,7 @@ class Groups extends Namespace {
       await group.findOneAndUpdate({
         name: data.name,
         $push: {
-          members: { userID: data.id, role: data.role },
+          members: { userID: data.id, role: data.role ,lat:data.lat, lon:data.long },
         },
       });
       socket.join(data.name as any);

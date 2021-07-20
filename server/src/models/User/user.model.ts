@@ -22,8 +22,8 @@ const userSchema: Schema<IUser> = new Schema({
   },
   role: {
     type: String,
-    enum: ['theaf', 'police'],
-    default: 'police',
+    // enum: ['theaf', 'police'],
+    // default: 'police',
     lowercase: true
   },
   status: {
@@ -46,6 +46,7 @@ const userSchema: Schema<IUser> = new Schema({
     trim: true,
     index: true,
     lowercase: true,
+    minlength: 3,
     maxlength: 72,
     required: true
   },

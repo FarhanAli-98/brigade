@@ -4,11 +4,9 @@ interface IMessage extends Document {
   text: string,
   senderID: string,
   receiverID: string
-  timestamp?: Date,
-  senderName?: string,
-  receiverName?: string,
-  senderDisplayPictureURL?: string,
-  receiverDisplayPictureURL?: string,
+  timestamp: Date,
+  senderName: string,
+  senderDisplayPictureURL?: string
 };
 
 export default IMessage;

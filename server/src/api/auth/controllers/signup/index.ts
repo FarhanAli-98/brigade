@@ -21,14 +21,10 @@ const signupController: RequestHandler = async (req: Request, res: Response) => 
     
      let user = await User.create({email, password, firstName, lastName, role});
     if(req.file) {
-
-    const file = fs.createReadStream(req.file.path)
-    const filename = (new Date()).toISOString()
-    //console.log(req.file.contentType);
       await user.updateOne({
         $set: {
           refreshToken: generateRefreshToken({ id: user._id, role: user.role }),
-          displayPicture:  req.file.path ,
+          displayPicture:  req.file.id ,
          // displayPictureURL: `http://localhost/api/images/profile/${req.file.id}`
         }
       });
